@@ -9,7 +9,11 @@ const Row = ({title,fetchUrl,Id}) => {
         const fetchData=async()=>{
            try {
             const resp=await axios.get(fetchUrl)
-            setMovies(resp.data.results)
+            const filteredMovies=resp.data.results.filter((movie)=>{
+              return !movie.genre_ids.includes(10749)
+            })
+          
+            setMovies(filteredMovies)
            } catch (error) {
             console.log(error);
            }
@@ -25,8 +29,10 @@ const Row = ({title,fetchUrl,Id}) => {
       const slider=document.getElementById("slider"+iD)
       slider.scrollLeft+=300
     }
+    
   return (
-    <div className='px-7'>
+    movies.length>1 ?(
+      <div className='px-7'>
       <h2 className='text-white font-bold md:text-2xl pt-6 pb-1'>{title}</h2>
       <div className='relative '>
         <ChevronLeftIcon   fontSize='55' className='absolute top-[35%] z-10 cursor-pointer text-black p-1 rounded-full text-2xl md:text-4xl bg-white ' onClick={()=>{
@@ -45,8 +51,8 @@ const Row = ({title,fetchUrl,Id}) => {
       </div>
    
     </div>
-   
+    ): (<div className='px-7'><h2 className='text-white font-bold md:text-2xl pt-6 pb-1'>Search for another movie</h2></div>
+    )  
   )
 }
-
 export default Row

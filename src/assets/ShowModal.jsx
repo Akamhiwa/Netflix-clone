@@ -1,48 +1,52 @@
 import React, { useEffect, useState ,useRef} from 'react'
 import ClearIcon from '@mui/icons-material/Clear';
-import axios from '../axios'
-const Modal = ({modal,onDelete}) => {
-  const API_KEY="b19e07280e40f03edff04ffcaa43e707"
-  const [input,setInput]=useState("")
+const Modal = ({modal,onDelete,setQuery}) => {
   const inputEl=useRef(null)
+  const [input,setInput]=useState("")
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") { 
+        console.log("Esc key pressed...");
+        onDelete();
+      }
+    };
   
-  useEffect(()=>{
-    if(modal){
-      
+    if (modal) {
+      inputEl.current.focus();
+      document.body.classList.add('modal-active')
+      document.addEventListener("keydown", handleKey);
+    } else {
+      document.body.classList.remove('modal-active')
+      document.removeEventListener("keydown", handleKey);
     }
-  },[modal])
-  const handleSubmit=()=>{
-    setInput("")
-  }
+  
+    
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.classList.remove('modal-active')
+    };
+  }, [modal, onDelete]); 
+  
+  
+
   const handleChange=(e)=>{
     const {value}=e.target
     setInput(value)
   }
-  const HandleForm=(e)=>{
+  
+  const HandleSubmit=(e)=>{
     e.preventDefault()
-    handleSubmit()
+    if(input.length<4) return;
+    setQuery('')
+    setQuery(input)
+    setInput("")
     onDelete()
-
   }
-  useEffect(()=>{
-    try {
-      const SearchMovie=async()=>{
-        if(input.length<3) return;
-        const response = await axios.get(`/search/movie?api_key=${API_KEY}&query=${input}`)
-        console.log(response?.data);
-      }
-      SearchMovie()
-      
-    } catch (error) {
-      console.log(error);
-    }
-    
-  },[input])
   return (
-    <div className='w-screen h-screen fixed top-0 left-0'>
+    <div className='w-screen h-screen fixed top-0 left-0 z-10'>
               <div className='w-full h-full fixed top-0 left-0  bg-black/75' onClick={onDelete}></div>
-              <div className='fixed h-14 md:h-20 px-12 md:px-[60px] lg:px-[120px]  top-[15%] w-full   ' >
-                      <form  className='flex items-center z-10 justify-between rounded-md  h-full w-[100%] mx-auto md:w-full bg-white md:px-16 px-4  ' onSubmit={HandleForm} >
+              <div className='fixed h-14 md:h-20 px-12 md:px-[60px] lg:px-[120px]  top-[15%] w-full'>
+                      <form  className='flex items-center z-20 justify-between rounded-md  h-full w-[100%] mx-auto md:w-full bg-white md:px-16 px-4  ' onSubmit={HandleSubmit} >
                         <input 
                         type="text" 
                         placeholder='search for a movie' 
