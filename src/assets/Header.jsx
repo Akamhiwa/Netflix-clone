@@ -10,7 +10,11 @@ function Header({fetchUrl}) {
       const fetchData=async()=>{
          try {
           const resp=await axios.get(fetchUrl)
-          setMovies(resp?.data.results)
+          const filteredMovies=resp.data.results.filter((movie)=>{
+            return !movie.genre_ids.includes(10749)
+          })
+        
+          setMovies(filteredMovies)
          } catch (error) {
           console.log(error);
          }
